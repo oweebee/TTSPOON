@@ -173,8 +173,8 @@ class SocketEdgeTTS {
 		const locale = this.force_fr ? 'fr-FR' : (localeMatch ? localeMatch[1] : 'en-US')
 		return (
 			"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" + locale + "'>\n" +
-			"<voice name='" + this.my_voice + "'><lang xml:lang='" + locale + "'><prosody pitch='" + this.my_pitch + "' rate='" + this.my_rate + "' volume='" + this.my_volume + "'>\n" +
-			this.my_text + "</prosody></lang></voice></speak>"
+			"<voice name='" + this.my_voice + "'><prosody pitch='" + this.my_pitch + "' rate='" + this.my_rate + "' volume='" + this.my_volume + "'>\n" +
+			this.my_text + "</prosody></voice></speak>"
 		)
 	}
 
