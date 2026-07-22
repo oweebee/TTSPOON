@@ -40,11 +40,24 @@ class ProcessingFile {
 			if ( rule[0] == '"' ) {
 				const match_arr = rule.trim().replaceAll('"', "").split("=")
 				if ( match_arr.length == 2 ) {
+					const isWordLike = /^[A-Za-zÀ-ÖØ-öø-ÿ]+\.?$/.test(match_arr[0]);
 					if (this.lexx_register == true) {
-						fix_text = fix_text.replaceAll(match_arr[0].toString(), match_arr[1].toString())
+						if (isWordLike) {
+							const escaped = this.get_escaped(match_arr[0]);
+							const regex = new RegExp('(^|\\s|\\p{P})' + escaped + '(?=\\p{P}|\\s|$)', 'gu');
+							fix_text = fix_text.replace(regex, '$1' + match_arr[1]);
+						} else {
+							fix_text = fix_text.replaceAll(match_arr[0].toString(), match_arr[1].toString())
+						}
 					} else {
-						const regex = new RegExp(this.get_escaped(match_arr[0]), 'giu');
-						fix_text = fix_text.replace(regex, match_arr[1]);
+						if (isWordLike) {
+							const escaped = this.get_escaped(match_arr[0]);
+							const regex = new RegExp('(^|\\s|\\p{P})' + escaped + '(?=\\p{P}|\\s|$)', 'giu');
+							fix_text = fix_text.replace(regex, '$1' + match_arr[1]);
+						} else {
+							const regex = new RegExp(this.get_escaped(match_arr[0]), 'giu');
+							fix_text = fix_text.replace(regex, match_arr[1]);
+						}
 					}
 				}
 			} else {
