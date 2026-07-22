@@ -22,7 +22,6 @@ const fileButtonLex = document.getElementById('file-button-lex')
 const fileButton = document.getElementById('file-button')
 const dopSettings = document.getElementById('dop-settings-label')
 const cbLexxRegister = document.getElementById('lexx_register')
-const cbForceFr = document.getElementById('force_fr')
 const textTools = document.getElementById('text-tools')
 const cleanPartsBtn = document.getElementById('clean-parts-btn')
 const cleanLinebreaksBtn = document.getElementById('clean-linebreaks-btn')
@@ -199,7 +198,6 @@ function set_dopSettings() {
 	document.querySelector('#div-threads').style.display = display_dop
 	document.querySelector('#div-mergefiles').style.display = display_dop
 	document.querySelector('#div-lexx_register').style.display = display_dop
-	document.querySelector('#div-force-fr').style.display = display_dop
 }
 
 fileInputLex.addEventListener('change', (event) => {
@@ -279,7 +277,6 @@ function lite_mod() {
 	document.querySelector('#div-threads').style.display = display_dop
 	document.querySelector('#div-mergefiles').style.display = display_dop
 	document.querySelector('#div-lexx_register').style.display = display_dop
-	document.querySelector('#div-force-fr').style.display = display_dop
 
 	if (book && book.all_sentences.length > 0) {
 		textArea.value = ""
@@ -390,8 +387,7 @@ function add_edge_tts(merge) {
 							book.all_sentences[num_book],
 							statArea,
 							threads_info,
-							merge,
-							cbForceFr.checked
+							merge
 						)
 					)
 					num_book += 1
@@ -567,7 +563,6 @@ function save_settings() {
 	localStorage.setItem('statArea_style_display'     , statArea.style.display      )
 	localStorage.setItem('dopSettings_textContent'    , dopSettings.textContent     )
 	localStorage.setItem('cbLexxRegister_checked'     , cbLexxRegister.checked      )
-	localStorage.setItem('cbForceFr_checked'          , cbForceFr.checked           )
 }
 
 function load_settings() {
@@ -586,6 +581,5 @@ function load_settings() {
 	if (localStorage.getItem('statArea_style_display'     )) { statArea.style.display      = localStorage.getItem('statArea_style_display'     ) === 'none' ? 'none' : 'flex' }
 	if (localStorage.getItem('dopSettings_textContent'    )) { dopSettings.textContent     = localStorage.getItem('dopSettings_textContent'    ) }
 	if (localStorage.getItem('cbLexxRegister_checked'     )) { cbLexxRegister.checked      = localStorage.getItem('cbLexxRegister_checked'     ) === 'true' }
-	if (localStorage.getItem('cbForceFr_checked'          )) { cbForceFr.checked           = localStorage.getItem('cbForceFr_checked'          ) === 'true' }
 	threads_info = { count: parseInt(max_threads.value), stat: stat_str }
 }
