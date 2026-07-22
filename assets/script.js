@@ -22,6 +22,7 @@ const fileButtonLex = document.getElementById('file-button-lex')
 const fileButton = document.getElementById('file-button')
 const dopSettings = document.getElementById('dop-settings-label')
 const cbLexxRegister = document.getElementById('lexx_register')
+const cbLexxUse = document.getElementById('lexx_use')
 const textTools = document.getElementById('text-tools')
 const cleanPartsBtn = document.getElementById('clean-parts-btn')
 const cleanLinebreaksBtn = document.getElementById('clean-linebreaks-btn')
@@ -165,7 +166,6 @@ function load_default_lexx() {
 		.then(response => response.ok ? response.text() : Promise.reject())
 		.then(text => {
 			lexx = text.split("\n")
-			fileButtonLex.textContent = "Chargé"
 		})
 		.catch(() => { /* Pas de dictionnaire par défaut trouvé, on ignore */ })
 }
@@ -209,6 +209,7 @@ function set_dopSettings() {
 	document.querySelector('#div-threads').style.display = display_dop
 	document.querySelector('#div-mergefiles').style.display = display_dop
 	document.querySelector('#div-lexx_register').style.display = display_dop
+	document.querySelector('#div-lexx_use').style.display = display_dop
 }
 
 fileInputLex.addEventListener('change', (event) => {
@@ -288,6 +289,7 @@ function lite_mod() {
 	document.querySelector('#div-threads').style.display = display_dop
 	document.querySelector('#div-mergefiles').style.display = display_dop
 	document.querySelector('#div-lexx_register').style.display = display_dop
+	document.querySelector('#div-lexx_use').style.display = display_dop
 
 	if (book && book.all_sentences.length > 0) {
 		textArea.value = ""
@@ -329,7 +331,7 @@ function get_text(_filename, _text, is_file, _voice, _rate, _pitch) {
 			_text,
 			FIRST_STRINGS_SIZE,
 			LAST_STRINGS_SIZE,
-			lexx,
+			cbLexxUse.checked ? lexx : [],
 			cbLexxRegister.checked,
 			_voice,
 			_rate,
@@ -574,6 +576,7 @@ function save_settings() {
 	localStorage.setItem('statArea_style_display'     , statArea.style.display      )
 	localStorage.setItem('dopSettings_textContent'    , dopSettings.textContent     )
 	localStorage.setItem('cbLexxRegister_checked'     , cbLexxRegister.checked      )
+	localStorage.setItem('cbLexxUse_checked'          , cbLexxUse.checked           )
 }
 
 function load_settings() {
@@ -592,5 +595,6 @@ function load_settings() {
 	if (localStorage.getItem('statArea_style_display'     )) { statArea.style.display      = localStorage.getItem('statArea_style_display'     ) === 'none' ? 'none' : 'flex' }
 	if (localStorage.getItem('dopSettings_textContent'    )) { dopSettings.textContent     = localStorage.getItem('dopSettings_textContent'    ) }
 	if (localStorage.getItem('cbLexxRegister_checked'     )) { cbLexxRegister.checked      = localStorage.getItem('cbLexxRegister_checked'     ) === 'true' }
+	if (localStorage.getItem('cbLexxUse_checked'          )) { cbLexxUse.checked           = localStorage.getItem('cbLexxUse_checked'          ) === 'true' }
 	threads_info = { count: parseInt(max_threads.value), stat: stat_str }
 }
