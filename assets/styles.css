@@ -314,7 +314,7 @@ rowspace {
 
 
 
-/* 1. Плавные переходы для интерактивных элементов */
+/* 1. Transitions douces pour les éléments interactifs */
 button, select, textarea, input[type="range"], .ikxBAC {
     transition:
         background 0.2s,
@@ -323,7 +323,7 @@ button, select, textarea, input[type="range"], .ikxBAC {
         color 0.2s;
 }
 
-/* 2. Более заметное выделение (фокус) */
+/* 2. Mise en évidence plus visible (focus) */
 button:focus, button:hover,
 select:focus, select:hover,
 textarea:focus, textarea:hover,
@@ -335,40 +335,40 @@ input[type="range"]:focus, input[type="range"]:hover {
     z-index: 1;
 }
 
-/* Для чекбокса */
+/* Pour la case à cocher */
 .checkbox-wrapper-2 .ikxBAC:focus {
     box-shadow: 0 0 0 2px #0d6efd55;
     border-color: #0d6efd;
 }
 
-/* 3. Закругление textarea */
+/* 3. Arrondi du textarea */
 textarea {
     border-radius: 12px !important;
 }
 
-/* 4. Можно чуть увеличить радиус у select и input */
+/* 4. On peut augmenter un peu le rayon des select et input */
 select, input[type="range"] {
     border-radius: 10px;
 }
 
-/* 5. Для плавности скролла (опционально) */
+/* 5. Pour un scroll fluide (optionnel) */
 html {
     scroll-behavior: smooth;
 }
 
-/* Для всех label, кроме неактивных */
+/* Pour tous les label, sauf les inactifs */
 label {
     transition: color 0.2s, text-shadow 0.2s;
     cursor: pointer;
 }
 
-/* Эффект при наведении */
+/* Effet au survol */
 label:hover, label:focus {
     color: #fff;
     text-shadow: 0 0 6px #0d6efd88;
 }
 
-/* Для ссылок внутри label */
+/* Pour les liens à l'intérieur des label */
 label a {
     transition: color 0.2s, text-shadow 0.2s;
     color: #0d6efd;
@@ -381,15 +381,15 @@ label a:hover, label a:focus {
     text-decoration: underline;
 }
 
-/* Для output внутри label (чтобы не мешал эффекту) */
+/* Pour output à l'intérieur des label (pour ne pas gêner l'effet) */
 label output {
     transition: color 0.2s;
 }
 
 
 
-/* Для нового статуса */
-/* === Статусы обработки (цветные квадратики) === */
+/* Pour le nouveau statut */
+/* === Statuts de traitement (carrés colorés) === */
 .stat-container {
     display: flex;
     flex-direction: row;
@@ -416,7 +416,7 @@ label output {
     box-sizing: border-box;
 }
 
-/* Убираем стандартное выделение */
+/* On enlève le contour par défaut */
 .stat-box:focus {
     outline: none;
 }
@@ -425,14 +425,14 @@ label output {
     background: transparent;
 }
 
-/* Цвета для темной темы */
+/* Couleurs pour le thème sombre */
 .stat-opened     { background-color: #444; }
 .stat-started    { background-color: #D97706; }
 .stat-processing { background-color: #B45309; }
 .stat-error      { background-color: #DC2626; }
 .stat-saved      { background-color: #059669; }
 
-/* Подсказка при клике */
+/* Infobulle au clic */
 .stat-tooltip {
     position: fixed;
     background-color: #333;

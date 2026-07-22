@@ -58,7 +58,7 @@ class SocketEdgeTTS {
 
 	onSocketOpen(event) {
 		this.end_message_received = false
-		this.update_stat("Запущена")
+		this.update_stat("Démarrée")
 
 		var my_data = this.date_to_string()
 		this.socket.send(
@@ -86,16 +86,16 @@ class SocketEdgeTTS {
 			if (data.includes("Path:turn.end")) {
 				this.end_message_received = true
 				//console.log("Path:turn.end ", this.indexpart)
-				//Обработка частей Blob с последующим сохранением в mp3
+				//Traitement des parties Blob puis sauvegarde en mp3
 				for (let _ind = 0; _ind < this.audios.length; _ind++) {
 					const reader_result = await this.audios[_ind].arrayBuffer()
 					const uint8_Array = await new Uint8Array(reader_result)
 
-					// Ищем все позиции байтов, равных "\r\n"
+					// Recherche de toutes les positions d'octets égales à "\r\n"
 					let posIndex = this.findIndex(uint8_Array, this.data_separator)
 					const parts = []
 					if (posIndex !== -1) {
-						// Разрезаем Blob на части
+						// Découpe le Blob en parties
 						const partBlob = this.audios[_ind].slice(posIndex + this.data_separator.length)
 						parts.push(partBlob)
 
@@ -127,9 +127,9 @@ class SocketEdgeTTS {
 	onSocketClose() {
 		if ( !this.mp3_saved ) {
 			if ( this.end_message_received == true ) {
-				this.update_stat("         Обработка")
+				this.update_stat("         Traitement")
 			} else {
-				this.update_stat("Ошибка - ПЕЕЗАПУСК")
+				this.update_stat("Erreur - REDÉMARRAGE")
 				let self = this
 				let timerId = setTimeout(function tick() {
 					self.my_uint8Array = new Uint8Array(0)
@@ -138,7 +138,7 @@ class SocketEdgeTTS {
 				}, 6000)
 			}
 		} else {
-			//this.update_stat("Сохранена и Закрыта")
+			//this.update_stat("Enregistrée et Fermée")
 		}
 		add_edge_tts(this.save_to_var)
 	}
@@ -316,7 +316,7 @@ class SocketEdgeTTS {
 					this.clear()
 				}
 			}
-			this.update_stat("Сохранена")
+			this.update_stat("Enregistrée")
 			this.obj_threads_info.count += 1
 			const stat_count = this.obj_threads_info.stat.textContent.split(' / ');
 			this.obj_threads_info.stat.textContent = String(Number(stat_count[0]) + 1) + " / " + stat_count[1]

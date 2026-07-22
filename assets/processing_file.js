@@ -24,19 +24,19 @@ class ProcessingFile {
 //		fix_text = fix_text.replace(/([^\.\,\!\?\:\;\-])\n/g, (match, p1) => p1 + ".\n")
 //	  }
 
-	  //Применение словаря
+	  //Application du dictionnaire
 	  if ( this.lang_lexx.length > 0 ) {
 
 		for (const rule of this.lang_lexx) {
 		  const match = rule.match(/^regex"(.*)"="(.*)"/)
 		  if (match) {
-			//Применение regex
+			//Application de la regex
 			const regex = new RegExp(match[1], 'g')
 			const replacement = match[2].replace(/\\r/g, '\r').replace(/\\n/g, '\n')
 
 			fix_text = fix_text.replace(regex, replacement)
 		  } else if ( rule.length > 0 ) {
-			//Применение не regex
+			//Application sans regex
 			if ( rule[0] == '"' ) {
 				const match_arr = rule.trim().replaceAll('"', "").split("=")
 				if ( match_arr.length == 2 ) {
@@ -68,8 +68,8 @@ class ProcessingFile {
 		}
 	  }
 
-	  if (pointsSelect.value !== 'Не заменять точки') {
-		  if (pointsSelect.value == 'Заменять на три строки') {
+	  if (pointsSelect.value !== 'Ne pas remplacer les points') {
+		  if (pointsSelect.value == 'Remplacer par trois lignes') {
 			  fix_text = fix_text.replace(/\./g, '\r\n\r\n\r\n\r\n')
 		  } else {
 			  var new_point = pointsSelect.value[pointsSelect.value.length - 1]
@@ -150,7 +150,7 @@ class ProcessingFile {
 	clear() {
 		this.file_names.length = 0
 		this.file_names = []
-		this.file_names.push(["Книга", 0, "", "", ""])
+		this.file_names.push(["Livre", 0, "", "", ""])
 		this.full_text = ""
 		this.pre_sentences.length = 0
 		this.all_sentences.length = 0

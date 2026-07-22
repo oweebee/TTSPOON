@@ -23,27 +23,27 @@ const fileButton = document.getElementById('file-button')
 const dopSettings = document.getElementById('dop-settings-label')
 const cbLexxRegister = document.getElementById('lexx_register')
 
-// Функции для работы со статусами
-// === Функции для работы со статусами ===
+// Fonctions de gestion des statuts
+// === Fonctions de gestion des statuts ===
 const statusNames = {
-    'stat-opened': 'Открыта',
-    'stat-started': 'Запущена',
-    'stat-processing': 'Обработка',
-    'stat-error': 'Ошибка - ПЕРЕЗАПУСК',
-    'stat-saved': 'Сохранена'
+    'stat-opened': 'Ouverte',
+    'stat-started': 'Démarrée',
+    'stat-processing': 'Traitement',
+    'stat-error': 'Erreur - REDÉMARRAGE',
+    'stat-saved': 'Enregistrée'
 };
 
 function getStatusClass(msg) {
-    if (msg === 'Открыта') return 'stat-opened';
-    if (msg === 'Запущена') return 'stat-started';
-    if (msg.includes('Обработка')) return 'stat-processing';
-    if (msg.includes('Ошибка')) return 'stat-error';
-    if (msg === 'Сохранена') return 'stat-saved';
+    if (msg === 'Ouverte') return 'stat-opened';
+    if (msg === 'Démarrée') return 'stat-started';
+    if (msg.includes('Traitement')) return 'stat-processing';
+    if (msg.includes('Erreur')) return 'stat-error';
+    if (msg === 'Enregistrée') return 'stat-saved';
     return 'stat-opened';
 }
 
 function getStatusText(index, statusClass) {
-    return `Часть ${(index + 1).toString().padStart(4, '0')}: ${statusNames[statusClass] || 'Неизвестно'}`;
+    return `Partie ${(index + 1).toString().padStart(4, '0')}: ${statusNames[statusClass] || 'Inconnu'}`;
 }
 
 function addStatusBox(index, status) {
@@ -69,33 +69,33 @@ function clearStatusBoxes() {
     statArea.innerHTML = '';
 }
 
-// Всплывающая подсказка при клике
+// Infobulle au clic
 let activeTooltip = null;
 
 function showStatusTooltip(e) {
     const box = e.target;
     const index = box.dataset.index;
 
-    // Если подсказка уже открыта для этого квадратика — закрыть
+    // Si l'infobulle est déjà ouverte pour ce carré — la fermer
     if (activeTooltip && activeTooltip.dataset.forIndex === index) {
         activeTooltip.remove();
         activeTooltip = null;
         return;
     }
 
-    // Закрыть старую подсказку если есть
+    // Fermer l'ancienne infobulle si elle existe
     if (activeTooltip) {
         activeTooltip.remove();
     }
 
-    // Создать новую
+    // Créer la nouvelle
     const tooltip = document.createElement('div');
     tooltip.className = 'stat-tooltip';
     tooltip.dataset.forIndex = index;
     tooltip.textContent = getStatusText(parseInt(index), box.dataset.status);
     document.body.appendChild(tooltip);
 
-    // Позиционирование
+    // Positionnement
     const rect = box.getBoundingClientRect();
     tooltip.style.left = (rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
     tooltip.style.top = (rect.top - tooltip.offsetHeight - 6) + 'px';
@@ -103,7 +103,7 @@ function showStatusTooltip(e) {
     activeTooltip = tooltip;
 }
 
-// Закрыть при клике вне квадратиков
+// Fermer au clic en dehors des carrés
 document.addEventListener('click', (e) => {
     if (!e.target.classList.contains('stat-box') && activeTooltip) {
         activeTooltip.remove();
@@ -119,7 +119,7 @@ settingsButton.addEventListener('click', e => lite_mod())
 rate.addEventListener('input', e => rate_str.textContent = rate.value >= 0 ? `+${rate.value}%` : `${rate.value}%`)
 pitch.addEventListener('input', e => pitch_str.textContent = pitch.value >= 0 ? `+${pitch.value}Hz` : `${pitch.value}Hz`)
 max_threads.addEventListener('input', e => max_threads_int.textContent = max_threads.value)
-mergefiles.addEventListener('input', e => mergefiles_str.textContent = mergefiles.value == 100 ? "ВСЕ" : `${mergefiles.value} шт.`)
+mergefiles.addEventListener('input', e => mergefiles_str.textContent = mergefiles.value == 100 ? "TOUS" : `${mergefiles.value} fichiers`)
 window.addEventListener('beforeunload', function(event) { save_settings() });
 
 
@@ -186,9 +186,9 @@ fileInputLex.addEventListener('change', (event) => {
 			lexx = reader.result.split("\n")
 		}
 		reader.readAsText(file)
-		fileButtonLex.textContent = "Загружен"
+		fileButtonLex.textContent = "Chargé"
 	} else {
-		fileButtonLex.textContent = "Загрузить"
+		fileButtonLex.textContent = "Charger"
 	}
 })
 
@@ -203,8 +203,8 @@ fileInput.addEventListener('change', (event) => {
 	}
 
 	if (event.target.files.length == 0) {
-		fileButton.textContent = "Открыть"
-		stat_info.textContent = ""//"Открыто"
+		fileButton.textContent = "Ouvrir"
+		stat_info.textContent = ""//"Ouvert"
 	}
 
 	for (let file of event.target.files) {
@@ -212,7 +212,7 @@ fileInput.addEventListener('change', (event) => {
 		stat_str.textContent = "0 / 0"
 
 		if (file) {
-			fileButton.textContent = "Обработка..."
+			fileButton.textContent = "Traitement..."
 			const reader = new FileReader()
 			reader.onload = () => {
 				book_loaded = true
@@ -229,12 +229,12 @@ fileInput.addEventListener('change', (event) => {
 				} else if ( file_name_toLowerCase.endsWith('.zip') ) {
 					convertZipToTxt(file)
 				}
-				fileButton.textContent = "Открыты"
+				fileButton.textContent = "Ouvert(s)"
 			}
 
 			reader.readAsText(file)
 		} else {
-			fileButton.textContent = "Открыть"
+			fileButton.textContent = "Ouvrir"
 		}
 	}
 
@@ -267,7 +267,7 @@ function lite_mod() {
 			let tmp_ind = 0
 			for (let part of book.all_sentences) {
 				tmp_ind += 1
-				textArea.value += "Часть " + tmp_ind + ":\n" + part + "\n\n"
+				textArea.value += "Partie " + tmp_ind + ":\n" + part + "\n\n"
 			}
 		}
 
@@ -304,14 +304,14 @@ function get_text(_filename, _text, is_file, _voice, _rate, _pitch) {
 	for (let part of book.all_sentences) {
 		tmp_ind += 1
 		if ( is_file == true && textArea.style.display != 'none') {
-			textArea.value += "Часть " + tmp_ind + ":\n" + part + "\n\n"
+			textArea.value += "Partie " + tmp_ind + ":\n" + part + "\n\n"
 		}
-		addStatusBox(tmp_ind - 1, 'Открыта')
+		addStatusBox(tmp_ind - 1, 'Ouverte')
 	}
-	stat_info.textContent = ""//"Открыто"
+	stat_info.textContent = ""//"Ouvert"
 	stat_str.textContent = `0 / ${book.all_sentences.length}`
 
-	//Очистка ранее запущенной обработки
+	//Nettoyage du traitement précédent
 	clear_old_run()
 }
 
@@ -375,14 +375,14 @@ function add_edge_tts(merge) {
 function get_audio() {
 	clear_old_run()
 	run_work = true
-	stat_info.textContent = "Обработано"
+	stat_info.textContent = "Traité"
 	const stat_count = stat_str.textContent.split(' / ');
 	stat_str.textContent = "0 / " + stat_count[1]
 	const merge = (mergefiles.value == 1) ? false : true;
 
 	if ( !book_loaded )  {
 		num_text += 1
-		get_text("Text " + (num_text).toString().padStart(4, '0'), textArea.value, false, "", "", "")
+		get_text("Texte " + (num_text).toString().padStart(4, '0'), textArea.value, false, "", "", "")
 	}
 	add_edge_tts(merge)
 }
