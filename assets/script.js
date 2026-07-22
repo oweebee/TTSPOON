@@ -29,6 +29,7 @@ const cleanLinebreaksBtn = document.getElementById('clean-linebreaks-btn')
 const newlineAfterDotBtn = document.getElementById('newline-after-dot-btn')
 const newlineAfterPunctBtn = document.getElementById('newline-after-punct-btn')
 const marginLowercaseBtn = document.getElementById('margin-lowercase-btn')
+const newlineBeforeCapitalBtn = document.getElementById('newline-before-capital-btn')
 
 // Fonctions de gestion des statuts
 // === Fonctions de gestion des statuts ===
@@ -125,6 +126,7 @@ cleanLinebreaksBtn.addEventListener('click', e => clean_linebreaks())
 newlineAfterDotBtn.addEventListener('click', e => newline_after_dot())
 newlineAfterPunctBtn.addEventListener('click', e => newline_after_punct())
 marginLowercaseBtn.addEventListener('click', e => margin_lowercase())
+newlineBeforeCapitalBtn.addEventListener('click', e => newline_before_capital_mid())
 
 //save_alloneButton.addEventListener('click', e => start_allone())
 settingsButton.addEventListener('click', e => lite_mod())
@@ -194,6 +196,12 @@ function newline_after_dot() {
 
 function newline_after_punct() {
 	textArea.value = textArea.value.replace(/([?!;:])(?!\n)/g, '$1\n')
+}
+
+function newline_before_capital_mid() {
+	textArea.value = textArea.value.split('\n').map(line => {
+		return line.replace(/(?<=\S)\s+(?=[A-ZÀ-ÖØ-Þ])/g, '\n')
+	}).join('\n')
 }
 
 function margin_lowercase() {
