@@ -11,6 +11,14 @@
 </head>
 
 <body>
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-box">
+      <div class="login-title">EDGE TTS</div>
+      <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="current-password">
+      <button id="login-button">Entrer</button>
+      <div id="login-error" class="login-error"></div>
+    </div>
+  </div>
   <textarea class="text" id="text-area" placeholder="Texte..."></textarea>
   <br>
   <section class="options">
@@ -25,7 +33,7 @@
 			<option value="en-US, BrianMultilingualNeural">en-US, BrianMultilingualNeural</option>
 			<option value="en-US, EmmaMultilingualNeural">en-US, EmmaMultilingualNeural</option>
 			<option value="fr-FR, VivienneMultilingualNeural">fr-FR, VivienneMultilingualNeural</option>
-			<option value="fr-FR, RemyMultilingualNeural">fr-FR, RemyMultilingualNeural</option>
+			<option value="fr-FR, RemyMultilingualNeural" selected>fr-FR, RemyMultilingualNeural</option>
 			<option value="de-DE, SeraphinaMultilingualNeural">de-DE, SeraphinaMultilingualNeural</option>
 			<option value="de-DE, FlorianMultilingualNeural">de-DE, FlorianMultilingualNeural</option>
 			<option value="it-IT, GiuseppeMultilingualNeural">it-IT, GiuseppeMultilingualNeural</option>
@@ -352,6 +360,11 @@
 		</select>
 		<button class="pointstype" id="pointstype" onclick="points_mod()">V1</button>
     </rowspace>
+	<div id="pointstype-hint" class="pointstype-hint">
+		<b>V1</b> : remplace TOUS les points du texte.<br>
+		<b>V2</b> : remplace les points au milieu des lignes, garde ceux en fin de ligne.<br>
+		<b>V3</b> : remplace uniquement les points suivis d'un espace.
+	</div>
     <div id="div-rate" class="slidecontainer">
 	  <br>
       <label for="rate">Vitesse <output style="float: right;" id="rate-str">+100%</output></label>
@@ -396,6 +409,8 @@
 		<div>Fonctionne actuellement uniquement via le navigateur Edge</div>
     </rowspace>
   </section>
+  <script src="./assets/env-config.js"></script>
+  <script src="./assets/auth.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="./assets/texts_converter.js"></script>
   <script src="./assets/processing_file.js"></script>
