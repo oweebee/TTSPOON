@@ -1,7 +1,7 @@
 class SocketEdgeTTS {
 	constructor(_indexpart, _filename, _filenum,
 				_voice, _pitch, _rate, _volume, _text,
-				_statArea, _obj_threads_info, _save_to_var) {
+				_statArea, _obj_threads_info, _save_to_var, _force_fr) {
 		this.bytes_data_separator = new TextEncoder().encode("Path:audio\r\n")
 		this.data_separator = new Uint8Array(this.bytes_data_separator)
 
@@ -21,6 +21,7 @@ class SocketEdgeTTS {
 		this.mp3_saved = false
 		this.save_to_var = _save_to_var
 		this.obj_threads_info = _obj_threads_info
+		this.force_fr = _force_fr
 		this.end_message_received = false
 		this.start_save = false
 
@@ -168,10 +169,12 @@ class SocketEdgeTTS {
 	}
 
 	mkssml() {
+		const localeMatch = this.my_voice.match(/\(([a-zA-Z]{2}-[a-zA-Z]{2,})/)
+		const locale = this.force_fr ? 'fr-FR' : (localeMatch ? localeMatch[1] : 'en-US')
 		return (
-			"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'>\n" +
-			"<voice name='" + this.my_voice + "'><prosody pitch='" + this.my_pitch + "' rate='" + this.my_rate + "' volume='" + this.my_volume + "'>\n" +
-			this.my_text + "</prosody></voice></speak>"
+			"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" + locale + "'>\n" +
+			"<voice name='" + this.my_voice + "'><lang xml:lang='" + locale + "'><prosody pitch='" + this.my_pitch + "' rate='" + this.my_rate + "' volume='" + this.my_volume + "'>\n" +
+			this.my_text + "</prosody></lang></voice></speak>"
 		)
 	}
 
