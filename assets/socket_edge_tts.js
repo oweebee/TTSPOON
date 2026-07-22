@@ -270,14 +270,11 @@ class SocketEdgeTTS {
 
 	generateSecMsGec() {
 		const WIN_EPOCH = 11644473600;
-		const S_TO_NS = 1e9;
 		const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
 
-		let ticks = Date.now() / 1000;
-		ticks -= 30 + Math.floor(Math.random() * 61);
-		ticks += WIN_EPOCH;
-		ticks -= ticks % 300;
-		ticks *= S_TO_NS / 100;
+		// Ticks Windows FILETIME : intervalles de 100ns depuis le 1601-01-01 UTC
+		let ticks = (Date.now() / 1000 + WIN_EPOCH) * 1e7;
+		ticks -= ticks % 3e9; // arrondi au multiple de 3 000 000 000 (= 5 minutes) inférieur
 
 		const strToHash = Math.floor(ticks) + TRUSTED_CLIENT_TOKEN;
 
