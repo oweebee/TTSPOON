@@ -22,6 +22,9 @@ const fileButtonLex = document.getElementById('file-button-lex')
 const fileButton = document.getElementById('file-button')
 const dopSettings = document.getElementById('dop-settings-label')
 const cbLexxRegister = document.getElementById('lexx_register')
+const textTools = document.getElementById('text-tools')
+const cleanPartsBtn = document.getElementById('clean-parts-btn')
+const cleanLinebreaksBtn = document.getElementById('clean-linebreaks-btn')
 
 // Fonctions de gestion des statuts
 // === Fonctions de gestion des statuts ===
@@ -113,6 +116,8 @@ document.addEventListener('click', (e) => {
 
 saveButton.addEventListener('click', e => start())
 dopSettings.addEventListener('click', e => change_dopSettings())
+cleanPartsBtn.addEventListener('click', e => clean_parts())
+cleanLinebreaksBtn.addEventListener('click', e => clean_linebreaks())
 
 //save_alloneButton.addEventListener('click', e => start_allone())
 settingsButton.addEventListener('click', e => lite_mod())
@@ -157,6 +162,14 @@ fileButtonLex.addEventListener('click', () => {
 fileButton.addEventListener('click', () => {
 	fileInput.click();
 })
+
+function clean_parts() {
+	textArea.value = textArea.value.replace(/Partie\s([1-9]|[1-9][0-9]|[1-4][0-9]{2}|500):/g, '')
+}
+
+function clean_linebreaks() {
+	textArea.value = textArea.value.replace(/([^.!?:\d])\r?\n/g, '$1 ')
+}
 
 function change_dopSettings() {
 	if (dopSettings.textContent == "︿") {
@@ -246,6 +259,7 @@ function lite_mod() {
 	const display_dop = (textArea.style.display == 'none' || dopSettings.textContent == "︿") ? 'block' : 'none';
 	textArea.style.display = display_str;
 	statArea.style.display = display_stat;
+	textTools.style.display = display_str;
 
 	document.querySelector('#div-pitch').style.display = display_dop
 	document.querySelector('#div-threads').style.display = display_dop
