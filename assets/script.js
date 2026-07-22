@@ -200,7 +200,10 @@ function newline_after_punct() {
 
 function newline_before_capital_mid() {
 	textArea.value = textArea.value.split('\n').map(line => {
-		return line.replace(/(?<=\S)\s+(?=[A-ZÀ-ÖØ-Þ])/g, '\n')
+		return line.replace(/(\S)\s+(?=[A-ZÀ-ÖØ-Þ])/g, (match, lastChar) => {
+			const alreadyPunctuated = /[.!?:;,]/.test(lastChar)
+			return (alreadyPunctuated ? lastChar : lastChar + '.') + '\n'
+		})
 	}).join('\n')
 }
 
