@@ -157,7 +157,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	lite_mod()
 	load_settings()
 	set_dopSettings()
+	load_default_lexx()
 })
+
+function load_default_lexx() {
+	fetch('./FR.lexx')
+		.then(response => response.ok ? response.text() : Promise.reject())
+		.then(text => {
+			lexx = text.split("\n")
+			fileButtonLex.textContent = "Chargé"
+		})
+		.catch(() => { /* Pas de dictionnaire par défaut trouvé, on ignore */ })
+}
 
 fileButtonLex.addEventListener('click', () => {
 	fileInputLex.click();
