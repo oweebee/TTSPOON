@@ -259,7 +259,7 @@ function lite_mod() {
 	const display_dop = (textArea.style.display == 'none' || dopSettings.textContent == "︿") ? 'block' : 'none';
 	textArea.style.display = display_str;
 	statArea.style.display = display_stat;
-	textTools.style.display = display_str;
+	textTools.style.display = (display_str == 'none') ? 'none' : 'flex';
 
 	document.querySelector('#div-pitch').style.display = display_dop
 	document.querySelector('#div-threads').style.display = display_dop
