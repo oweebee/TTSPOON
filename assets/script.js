@@ -210,12 +210,12 @@ function newline_before_capital_mid() {
 }
 
 function replace_word() {
-	const from = replaceWordFrom.value.trim()
+	const from = replaceWordFrom.value
 	const to = replaceWordTo.value
 	if (!from) return
-	const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-	const regex = new RegExp('(^|\\s|\\p{P})' + escaped + '(?=\\p{P}|\\s|$)', 'giu')
-	textArea.value = textArea.value.replace(regex, '$1' + to)
+	// Remplacement littéral de tout le texte trouvé, y compris à l'intérieur d'un mot
+	// (ex: remplacer "ç" par "ss" dans "forçait" donne "forssait")
+	textArea.value = textArea.value.split(from).join(to)
 }
 
 function margin_indented_capital() {
