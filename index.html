@@ -349,6 +349,22 @@
 			<option value="zu-ZA, ThembaNeural">zu-ZA, ThembaNeural</option>
 		</select>
     </rowspace>
+    <myspace class="myspace">
+		<label id="left-label"><a href="./FR.lexx" id="is-lexx">Dictionnaire perso</a></label>
+		<label id="right-label">Livres</label>
+		<button id="file-button-lex">Charger</button>
+		<button id="file-button">Ouvrir</button>
+	</myspace>
+    <input type="file" id="file-input-lex" accept=".lexx">
+    <input type="file" id="file-input" accept=".txt, .fb2, .epub, .ini, .zip" multiple>
+	<div id="div-lexx_use" class="checkbox-wrapper-2">
+		<br>
+		<label for="lexx_use" class="checkbox-label">Utiliser le dictionnaire de correction<input id="lexx_use" type="checkbox" class="sc-gJwTLC ikxBAC" checked></label>
+	</div>
+	<div id="div-lexx_register" class="checkbox-wrapper-2">
+		<br>
+		<label for="lexx_register" class="checkbox-label">Respecter la casse du dictionnaire<input id="lexx_register" type="checkbox" class="sc-gJwTLC ikxBAC" checked></label>
+	</div>
     <rowspace>
 		<select class="pointsselect" id="pointsselect" name="pointsselect">
 			<option>Ne pas remplacer les points</option>
@@ -372,6 +388,9 @@
 		<button id="newline-after-punct-btn">Retour à la ligne après ? ! ; :</button>
 		<button id="margin-lowercase-btn">Ramener à la marge les lignes qui commencent par une majuscule</button>
 		<button id="newline-before-capital-btn">Retour à la ligne avant une majuscule en milieu de ligne</button>
+		<input type="text" id="replace-word-from" placeholder="Mot à remplacer">
+		<input type="text" id="replace-word-to" placeholder="Remplacer par">
+		<button id="replace-word-btn">Remplacer ce mot partout</button>
 	</div>
     <div id="div-rate" class="slidecontainer">
 	  <br>
@@ -393,24 +412,8 @@
       <label for="mergefiles">Fusionner les MP3 par<output style="float: right;" id="mergefiles-str">10 fichiers</output></label>
       <input type="range" min=1 max=100 value=10 step=1 class="mergefiles" id="mergefiles">
     </div>
-	<div id="div-lexx_use" class="checkbox-wrapper-2">
-		<br>
-		<label for="lexx_use" class="checkbox-label">Utiliser le dictionnaire de correction<input id="lexx_use" type="checkbox" class="sc-gJwTLC ikxBAC" checked></label>
-	</div>
-	<div id="div-lexx_register" class="checkbox-wrapper-2">
-		<br>
-		<label for="lexx_register" class="checkbox-label">Respecter la casse du dictionnaire<input id="lexx_register" type="checkbox" class="sc-gJwTLC ikxBAC" checked></label>
-	</div>
 	<label id="dop-settings-label">﹀</label>
 	<br>
-    <myspace class="myspace">
-		<label id="left-label"><a href="./FR.lexx" id="is-lexx">Dictionnaire perso</a></label>
-		<label id="right-label">Livres</label>
-		<button id="file-button-lex">Charger</button>
-		<button id="file-button">Ouvrir</button>
-	</myspace>
-    <input type="file" id="file-input-lex" accept=".lexx">
-    <input type="file" id="file-input" accept=".txt, .fb2, .epub, .ini, .zip" multiple>
 	<button class="save" id="savebutton">Enregistrer en MP3</button>
 	<br>
 	<div class="stat-container" id="stat-area"></div>

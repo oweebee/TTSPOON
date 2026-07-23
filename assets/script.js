@@ -30,6 +30,9 @@ const newlineAfterDotBtn = document.getElementById('newline-after-dot-btn')
 const newlineAfterPunctBtn = document.getElementById('newline-after-punct-btn')
 const marginLowercaseBtn = document.getElementById('margin-lowercase-btn')
 const newlineBeforeCapitalBtn = document.getElementById('newline-before-capital-btn')
+const replaceWordFrom = document.getElementById('replace-word-from')
+const replaceWordTo = document.getElementById('replace-word-to')
+const replaceWordBtn = document.getElementById('replace-word-btn')
 
 // Fonctions de gestion des statuts
 // === Fonctions de gestion des statuts ===
@@ -127,6 +130,7 @@ newlineAfterDotBtn.addEventListener('click', e => newline_after_dot())
 newlineAfterPunctBtn.addEventListener('click', e => newline_after_punct())
 marginLowercaseBtn.addEventListener('click', e => margin_lowercase())
 newlineBeforeCapitalBtn.addEventListener('click', e => newline_before_capital_mid())
+replaceWordBtn.addEventListener('click', e => replace_word())
 
 //save_alloneButton.addEventListener('click', e => start_allone())
 settingsButton.addEventListener('click', e => lite_mod())
@@ -205,6 +209,15 @@ function newline_before_capital_mid() {
 			return (alreadyPunctuated ? lastChar : lastChar + '.') + '\n'
 		})
 	}).join('\n')
+}
+
+function replace_word() {
+	const from = replaceWordFrom.value.trim()
+	const to = replaceWordTo.value
+	if (!from) return
+	const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+	const regex = new RegExp('(^|\\s|\\p{P})' + escaped + '(?=\\p{P}|\\s|$)', 'giu')
+	textArea.value = textArea.value.replace(regex, '$1' + to)
 }
 
 function margin_lowercase() {
