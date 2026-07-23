@@ -28,6 +28,7 @@ const cleanPartsBtn = document.getElementById('clean-parts-btn')
 const cleanLinebreaksBtn = document.getElementById('clean-linebreaks-btn')
 const newlineAfterPunctBtn = document.getElementById('newline-after-punct-btn')
 const marginLowercaseBtn = document.getElementById('margin-lowercase-btn')
+const marginIndentedCapitalBtn = document.getElementById('margin-indented-capital-btn')
 const newlineBeforeCapitalBtn = document.getElementById('newline-before-capital-btn')
 const replaceWordFrom = document.getElementById('replace-word-from')
 const replaceWordTo = document.getElementById('replace-word-to')
@@ -127,6 +128,7 @@ cleanPartsBtn.addEventListener('click', e => clean_parts())
 cleanLinebreaksBtn.addEventListener('click', e => clean_linebreaks())
 newlineAfterPunctBtn.addEventListener('click', e => newline_after_punct())
 marginLowercaseBtn.addEventListener('click', e => margin_lowercase())
+marginIndentedCapitalBtn.addEventListener('click', e => margin_indented_capital())
 newlineBeforeCapitalBtn.addEventListener('click', e => newline_before_capital_mid())
 replaceWordBtn.addEventListener('click', e => replace_word())
 
@@ -214,6 +216,12 @@ function replace_word() {
 	const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 	const regex = new RegExp('(^|\\s|\\p{P})' + escaped + '(?=\\p{P}|\\s|$)', 'giu')
 	textArea.value = textArea.value.replace(regex, '$1' + to)
+}
+
+function margin_indented_capital() {
+	textArea.value = textArea.value.split('\n').map(line => {
+		return line.replace(/ {5,}(?=[A-ZÀ-ÖØ-Þ])/g, '\n')
+	}).join('\n')
 }
 
 function margin_lowercase() {
