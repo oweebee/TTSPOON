@@ -26,7 +26,6 @@ const cbLexxUse = document.getElementById('lexx_use')
 const textTools = document.getElementById('text-tools')
 const cleanPartsBtn = document.getElementById('clean-parts-btn')
 const cleanLinebreaksBtn = document.getElementById('clean-linebreaks-btn')
-const newlineAfterDotBtn = document.getElementById('newline-after-dot-btn')
 const newlineAfterPunctBtn = document.getElementById('newline-after-punct-btn')
 const marginLowercaseBtn = document.getElementById('margin-lowercase-btn')
 const newlineBeforeCapitalBtn = document.getElementById('newline-before-capital-btn')
@@ -126,7 +125,6 @@ saveButton.addEventListener('click', e => start())
 dopSettings.addEventListener('click', e => change_dopSettings())
 cleanPartsBtn.addEventListener('click', e => clean_parts())
 cleanLinebreaksBtn.addEventListener('click', e => clean_linebreaks())
-newlineAfterDotBtn.addEventListener('click', e => newline_after_dot())
 newlineAfterPunctBtn.addEventListener('click', e => newline_after_punct())
 marginLowercaseBtn.addEventListener('click', e => margin_lowercase())
 newlineBeforeCapitalBtn.addEventListener('click', e => newline_before_capital_mid())
@@ -192,10 +190,6 @@ function clean_parts() {
 
 function clean_linebreaks() {
 	textArea.value = textArea.value.replace(/([^.!?:\d])\r?\n/g, '$1 ')
-}
-
-function newline_after_dot() {
-	textArea.value = textArea.value.replace(/\.(?!\n)/g, '.\n')
 }
 
 function newline_after_punct() {
