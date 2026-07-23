@@ -193,7 +193,7 @@ function clean_linebreaks() {
 }
 
 function newline_after_punct() {
-	textArea.value = textArea.value.replace(/([?!;:])(?!\n)/g, '$1\n')
+	textArea.value = textArea.value.replace(/([.?!;:])(?!\n)/g, '$1\n')
 }
 
 function newline_before_capital_mid() {
