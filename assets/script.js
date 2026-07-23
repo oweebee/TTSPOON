@@ -199,8 +199,10 @@ function newline_after_punct() {
 function newline_before_capital_mid() {
 	textArea.value = textArea.value.split('\n').map(line => {
 		return line.replace(/(\S)\s+(?=[A-ZÀ-ÖØ-Þ])/g, (match, lastChar) => {
-			const alreadyPunctuated = /[.!?:;,]/.test(lastChar)
-			return (alreadyPunctuated ? lastChar : lastChar + '.') + '\n'
+			// On ne coupe que si le caractère précédent est une lettre normale
+			// (pas un tiret, underscore, guillemet, apostrophe, ponctuation, chiffre, etc.)
+			const isLetter = /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(lastChar)
+			return isLetter ? lastChar + '\n' : match
 		})
 	}).join('\n')
 }
