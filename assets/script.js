@@ -196,18 +196,28 @@ function clean_linebreaks() {
 
 function newline_after_punct() {
 	// Ponctuation (. ? ! ; :) + guillemets FERMANTS (» " ") déclenchent un retour à la ligne.
-	// Les guillemets OUVRANTS (« " „ ‟) n'en déclenchent jamais et empêchent la ponctuation
-	// juste avant de couper (ex: "dit : « Bonjour" ne coupe pas avant «).
+	// Les guillemets OUVRANTS (« " „ ‟) et la virgule n'en déclenchent jamais et empêchent la
+	// ponctuation/le guillemet juste avant de couper (ex: "dit : « Bonjour" ou "» , comme" ne
+	// coupent pas avant « / la virgule).
 	// Les répétitions fusionnent à travers les espaces (normaux ou insécables), mais pas à
 	// travers un vrai caractère/mot.
 	const CW = ' \\t\\u00A0\\u202F' // espace, tabulation, espace insécable, espace fine insécable
-	const OPEN = '«“„‟'
+	const OPEN = '«“„‟,' // guillemets ouvrants + virgule : jamais de coupure avant
 	const TRIG = '.?!;:»”"'
-	const regex = new RegExp(
-		'[' + TRIG + '](?:[' + CW + ']*[' + TRIG + '])*(?!\\n)(?![' + CW + ']*[' + OPEN + '])',
-		'g'
-	)
-	textArea.value = textArea.value.replace(regex, '$&\n')
+	const COMBINED = OPEN + TRIG.replace(/[.?]/g, c => '\\' + c)
+
+	// 1) Nettoyage : un retour à la ligne déjà présent dans le texte, juste avant un
+	//    déclencheur ou un caractère "jamais de coupure avant", est superflu -> on le retire
+	//    (sauf saut de paragraphe = double retour à la ligne, qu'on laisse intact).
+	const cleanupRegex = new RegExp('(?<!\\n)\\r?\\n(?!\\r?\\n)[' + CW + ']*(?=[' + COMBINED + '])', 'g')
+	let value = textArea.value.replace(cleanupRegex, '')
+
+	// 2) Ajout des retours à la ligne. On n'en rajoute pas un si le texte en a déjà un juste
+	//    après (évite les doublons quand on reclique sur le bouton).
+	const regex = new RegExp('[' + TRIG + '](?:[' + CW + ']*[' + TRIG + '])*(?![' + CW + ']*[' + OPEN + '])', 'g')
+	value = value.replace(regex, (m, offset, full) => full[offset + m.length] === '\n' ? m : m + '\n')
+
+	textArea.value = value
 }
 
 function newline_before_capital_mid() {
