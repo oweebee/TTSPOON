@@ -139,6 +139,9 @@ pitch.addEventListener('input', e => pitch_str.textContent = pitch.value >= 0 ? 
 max_threads.addEventListener('input', e => max_threads_int.textContent = max_threads.value)
 mergefiles.addEventListener('input', e => mergefiles_str.textContent = mergefiles.value == 100 ? "TOUS" : `${mergefiles.value} fichiers`)
 window.addEventListener('beforeunload', function(event) { save_settings() });
+// Si l'utilisateur modifie le texte à la main après avoir chargé un fichier, on invalide le
+// livre déjà généré : sinon la génération TTS repartirait sur l'ancien texte (avant modif).
+textArea.addEventListener('input', () => { book_loaded = false })
 
 
 stat_info.addEventListener('click', () => {
@@ -187,14 +190,17 @@ fileButton.addEventListener('click', () => {
 })
 
 function clean_parts() {
+	book_loaded = false // le texte affiché change : on force la régénération à partir du texte actuel
 	textArea.value = textArea.value.replace(/Partie\s([1-9]|[1-9][0-9]|[1-4][0-9]{2}|500):/g, '')
 }
 
 function clean_linebreaks() {
+	book_loaded = false
 	textArea.value = textArea.value.replace(/([^.!?:\d])\r?\n/g, '$1 ')
 }
 
 function newline_after_punct() {
+	book_loaded = false
 	// Ponctuation (. ? ! ; :) + guillemets FERMANTS (» " ") déclenchent un retour à la ligne.
 	// Les guillemets OUVRANTS (« " „ ‟) et la virgule n'en déclenchent jamais et empêchent la
 	// ponctuation/le guillemet juste avant de couper (ex: "dit : « Bonjour" ou "» , comme" ne
@@ -221,6 +227,7 @@ function newline_after_punct() {
 }
 
 function newline_before_capital_mid() {
+	book_loaded = false
 	textArea.value = textArea.value.split('\n').map(line => {
 		return line.replace(/(\S)\s+(?=[A-ZÀ-ÖØ-Þ])/g, (match, lastChar) => {
 			// On ne coupe que si le caractère précédent est une lettre normale
@@ -232,6 +239,7 @@ function newline_before_capital_mid() {
 }
 
 function replace_word() {
+	book_loaded = false
 	const from = replaceWordFrom.value
 	const to = replaceWordTo.value
 	if (!from) return
@@ -241,12 +249,14 @@ function replace_word() {
 }
 
 function margin_indented_capital() {
+	book_loaded = false
 	textArea.value = textArea.value.split('\n').map(line => {
 		return line.replace(/ {5,}(?=[A-ZÀ-ÖØ-Þ])/g, '\n')
 	}).join('\n')
 }
 
 function margin_lowercase() {
+	book_loaded = false
 	textArea.value = textArea.value.split('\n').map(line => {
 		const firstLetter = line.match(/[A-Za-zÀ-ÖØ-öø-ÿ]/)
 		if (firstLetter && firstLetter[0] === firstLetter[0].toUpperCase() && firstLetter[0] !== firstLetter[0].toLowerCase()) {
