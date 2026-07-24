@@ -195,8 +195,10 @@ function clean_linebreaks() {
 }
 
 function newline_after_punct() {
-	// Points/ponctuation + tous les types de guillemets (« » " " „ ‟), mais pas les apostrophes
-	textArea.value = textArea.value.replace(/([.?!;:«»""„‟"])(?!\n)/g, '$1\n')
+	// Points/ponctuation + tous les types de guillemets (« » " " „ ‟), mais pas les apostrophes.
+	// Si un guillemet suit une ponctuation sur la même ligne, avec seulement des espaces entre
+	// les deux (aucun autre caractère), on ne coupe qu'une fois, après le dernier de la série.
+	textArea.value = textArea.value.replace(/[.?!;:«»""„‟"](?:[ \t]*[.?!;:«»""„‟"])*(?!\n)/g, '$&\n')
 }
 
 function newline_before_capital_mid() {
