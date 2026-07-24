@@ -195,10 +195,19 @@ function clean_linebreaks() {
 }
 
 function newline_after_punct() {
-	// Points/ponctuation + tous les types de guillemets (« » " " „ ‟), mais pas les apostrophes.
-	// Si un guillemet suit une ponctuation sur la même ligne, avec seulement des espaces entre
-	// les deux (aucun autre caractère), on ne coupe qu'une fois, après le dernier de la série.
-	textArea.value = textArea.value.replace(/[.?!;:«»""„‟"](?:[ \t]*[.?!;:«»""„‟"])*(?!\n)/g, '$&\n')
+	// Ponctuation (. ? ! ; :) + guillemets FERMANTS (» " ") déclenchent un retour à la ligne.
+	// Les guillemets OUVRANTS (« " „ ‟) n'en déclenchent jamais et empêchent la ponctuation
+	// juste avant de couper (ex: "dit : « Bonjour" ne coupe pas avant «).
+	// Les répétitions fusionnent à travers les espaces (normaux ou insécables), mais pas à
+	// travers un vrai caractère/mot.
+	const CW = ' \\t\\u00A0\\u202F' // espace, tabulation, espace insécable, espace fine insécable
+	const OPEN = '«“„‟'
+	const TRIG = '.?!;:»”"'
+	const regex = new RegExp(
+		'[' + TRIG + '](?:[' + CW + ']*[' + TRIG + '])*(?!\\n)(?![' + CW + ']*[' + OPEN + '])',
+		'g'
+	)
+	textArea.value = textArea.value.replace(regex, '$&\n')
 }
 
 function newline_before_capital_mid() {
