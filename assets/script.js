@@ -625,9 +625,6 @@ const start = () => {
 	selectDirectory()
 }
 
-
-}
-
 function save_settings() {
 	localStorage.setItem('restart_delay_value', restart_delay.value)
 	localStorage.setItem('pointsSelect_value'         , pointsSelect.value          )
