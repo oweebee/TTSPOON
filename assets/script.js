@@ -7,6 +7,8 @@ const max_threads = document.querySelector('.max-threads')
 const max_threads_int = document.querySelector('#max-threads-int')
 const mergefiles = document.querySelector('.mergefiles')
 const mergefiles_str = document.querySelector('#mergefiles-str')
+const restart_delay = document.querySelector('.restartdelay')
+const restart_delay_str = document.querySelector('#restartdelay-str')
 const voice = document.querySelector('.voices')
 const saveButton = document.querySelector('.save')
 const settingsButton = document.querySelector('.settingsbutton')
@@ -132,10 +134,26 @@ replaceWordBtn.addEventListener('click', e => replace_word())
 
 //save_alloneButton.addEventListener('click', e => start_allone())
 settingsButton.addEventListener('click', e => lite_mod())
-rate.addEventListener('input', e => rate_str.textContent = rate.value >= 0 ? `+${rate.value}%` : `${rate.value}%`)
-pitch.addEventListener('input', e => pitch_str.textContent = pitch.value >= 0 ? `+${pitch.value}Hz` : `${pitch.value}Hz`)
-max_threads.addEventListener('input', e => max_threads_int.textContent = max_threads.value)
-mergefiles.addEventListener('input', e => mergefiles_str.textContent = mergefiles.value == 100 ? "TOUS" : `${mergefiles.value} fichiers`)
+const update_rate_str = () => rate_str.textContent = rate.value >= 0 ? `+${rate.value}%` : `${rate.value}%`
+const update_pitch_str = () => pitch_str.textContent = pitch.value >= 0 ? `+${pitch.value}Hz` : `${pitch.value}Hz`
+const update_max_threads_int = () => max_threads_int.textContent = max_threads.value
+const update_mergefiles_str = () => mergefiles_str.textContent = mergefiles.value == 100 ? "TOUS" : `${mergefiles.value} fichiers`
+const RESTART_DELAY_STEPS = [10, 20, 30, 40, 60, 80, 100, 200, 300, 400, 600, 800, 1000, 2000, 3000, 4000, 6000, 8000, 10000]
+restart_delay.min = 0
+restart_delay.max = RESTART_DELAY_STEPS.length
+restart_delay.value = RESTART_DELAY_STEPS.length - 1
+var restart_delay_msec = Infinity
+const update_restart_delay_str = () => {
+	const sec = RESTART_DELAY_STEPS[Number(restart_delay.value)]
+	restart_delay_msec = sec === undefined ? Infinity : sec * 1000
+	restart_delay_str.textContent = sec === undefined ? '∞' : `${sec} s`
+	for (const part of parts_book) part.arm_watchdog()
+}
+rate.addEventListener('input', update_rate_str)
+pitch.addEventListener('input', update_pitch_str)
+max_threads.addEventListener('input', () => { update_max_threads_int(); add_edge_tts() })
+mergefiles.addEventListener('input', update_mergefiles_str)
+restart_delay.addEventListener('input', update_restart_delay_str)
 window.addEventListener('beforeunload', function(event) { save_settings() });
 // Si l'utilisateur modifie le texte à la main après avoir chargé un fichier, on invalide le
 // livre déjà généré : sinon la génération TTS repartirait sur l'ancien texte (avant modif).
@@ -159,8 +177,11 @@ var file_name_ind = 0
 var num_book = 0
 var num_text = 0
 var fix_num_book = 0
-var threads_info = { count: parseInt(max_threads.value), stat: stat_str }
+var threads_info = { saved: 0, stat: stat_str }
 var run_work = false
+var run_merge = false
+var launch_timer = null
+const has_free_thread = () => num_book - threads_info.saved < parseInt(max_threads.value)
 var save_path_handle
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -266,6 +287,7 @@ function set_dopSettings() {
 	document.querySelector('#div-pitch').style.display = display_dop
 	document.querySelector('#div-threads').style.display = display_dop
 	document.querySelector('#div-mergefiles').style.display = display_dop
+	document.querySelector('#div-restartdelay').style.display = display_dop
 	document.querySelector('#div-lexx_register').style.display = display_dop
 	document.querySelector('#div-lexx_use').style.display = display_dop
 }
@@ -346,6 +368,7 @@ function lite_mod() {
 	document.querySelector('#div-pitch').style.display = display_dop
 	document.querySelector('#div-threads').style.display = display_dop
 	document.querySelector('#div-mergefiles').style.display = display_dop
+	document.querySelector('#div-restartdelay').style.display = display_dop
 	document.querySelector('#div-lexx_register').style.display = display_dop
 	document.querySelector('#div-lexx_use').style.display = display_dop
 
@@ -413,60 +436,41 @@ function get_text(_filename, _text, is_file, _voice, _rate, _pitch) {
 }
 
 function clear_old_run() {
+	clearTimeout(launch_timer)
+	launch_timer = null
 	if (parts_book) {
 		for (let part of parts_book) {
-			if (part) part.clear()
+			if (part) part.cancel()
 		}
 	}
 	parts_book = []
 	file_name_ind = 0
 	num_book = 0
 	fix_num_book = 0
-	threads_info = { count: parseInt(max_threads.value), stat: stat_str }
+	threads_info = { saved: 0, stat: stat_str }
 }
 
-function add_edge_tts(merge) {
-	if (run_work == true) {
-		if (book && num_book < threads_info.count) {
-			let file_name = book.file_names[file_name_ind][0]
-			let file_voice = book.file_names[file_name_ind][2] !== "" ? book.file_names[file_name_ind][2] : voice.value
-			let file_rate = book.file_names[file_name_ind][3] !== "" ? book.file_names[file_name_ind][3] : rate_str.textContent
-			let file_pitch = book.file_names[file_name_ind][4] !== "" ? book.file_names[file_name_ind][4] : String(pitch_str.textContent)
-			let timerId = setTimeout(function tick() {
-				if ( threads_info.count < parseInt(max_threads.value) ) {
-					threads_info.count = parseInt(max_threads.value)
-				}
-				if ( num_book < threads_info.count && num_book < book.all_sentences.length) {
-					if ( book.file_names[file_name_ind][1] > 0 && book.file_names[file_name_ind][1] <= num_book ) {
-						file_name_ind += 1
-						file_name = book.file_names[file_name_ind][0]
-						file_voice = book.file_names[file_name_ind][2] !== "" ? book.file_names[file_name_ind][2] : voice.value
-						file_rate = book.file_names[file_name_ind][3] !== "" ? book.file_names[file_name_ind][3] : rate_str.textContent
-						file_pitch = book.file_names[file_name_ind][4] !== "" ? book.file_names[file_name_ind][4] : String(pitch_str.textContent)
-						fix_num_book = num_book
-					}
-
-					parts_book.push(
-						new SocketEdgeTTS(
-							num_book,
-							file_name,
-							(num_book+1-fix_num_book).toString().padStart(4, '0'),
-							"Microsoft Server Speech Text to Speech Voice (" + file_voice + ")",
-							file_pitch,
-							file_rate,
-							"+0%",
-							book.all_sentences[num_book],
-							statArea,
-							threads_info,
-							merge
-						)
-					)
-					num_book += 1
-				}
-			}, 100)
+function add_edge_tts() {
+	if (!run_work || !book) return
+	if (run_merge) do_marge()
+	if (launch_timer !== null || !has_free_thread() || num_book >= book.all_sentences.length) return
+	launch_timer = setTimeout(() => {
+		launch_timer = null
+		if (!run_work || !book || !has_free_thread() || num_book >= book.all_sentences.length) return
+		while (file_name_ind < book.file_names.length - 1 && book.file_names[file_name_ind][1] <= num_book) {
+			file_name_ind += 1
+			fix_num_book = num_book
 		}
-		if (merge) do_marge()
-	}
+		const [name, , selectedVoice, selectedRate, selectedPitch] = book.file_names[file_name_ind]
+		const index = num_book++
+		parts_book.push(new SocketEdgeTTS(
+			index, name, (index + 1 - fix_num_book).toString().padStart(4, '0'),
+			"Microsoft Server Speech Text to Speech Voice (" + (selectedVoice || voice.value) + ")",
+			selectedPitch || pitch_str.textContent, selectedRate || rate_str.textContent, "+0%",
+			book.all_sentences[index], statArea, threads_info, run_merge
+		))
+		add_edge_tts()
+	}, 100)
 }
 
 function get_audio() {
@@ -475,13 +479,13 @@ function get_audio() {
 	stat_info.textContent = "Traité"
 	const stat_count = stat_str.textContent.split(' / ');
 	stat_str.textContent = "0 / " + stat_count[1]
-	const merge = (mergefiles.value == 1) ? false : true;
+	run_merge = mergefiles.value != 1;
 
 	if ( !book_loaded )  {
 		num_text += 1
 		get_text("Texte " + (num_text).toString().padStart(4, '0'), textArea.value, false, "", "", "")
 	}
-	add_edge_tts(merge)
+	add_edge_tts()
 }
 
 async function saveFiles(fix_filename, blob, from_ind, to_ind) {
@@ -607,12 +611,10 @@ function do_marge() {
 async function selectDirectory() {
   try {
     save_path_handle = await window.showDirectoryPicker({ mode: 'readwrite' })
-    const fileHandle = await save_path_handle.getFileHandle('temp.txt', {create: true})
-    const writable = await fileHandle.createWritable()
-    await writable.close()
-    await fileHandle.remove()
+
 	get_audio()
   } catch (err) {
+    if (err.name === 'AbortError') return
     console.log('err', err);
 	save_path_handle = null
 	get_audio()
@@ -636,6 +638,7 @@ function points_mod() {
 }
 
 function save_settings() {
+	localStorage.setItem('restart_delay_value', restart_delay.value)
 	localStorage.setItem('pointsSelect_value'         , pointsSelect.value          )
 	localStorage.setItem('pointsType_innerHTML'       , pointsType.innerHTML        )
 	localStorage.setItem('voice_value'                , voice.value                 )
@@ -643,10 +646,6 @@ function save_settings() {
 	localStorage.setItem('pitch_value'                , pitch.value                 )
 	localStorage.setItem('max_threads_value'          , max_threads.value           )
 	localStorage.setItem('mergefiles_value'           , mergefiles.value            )
-	localStorage.setItem('rate_str_textContent'       , rate_str.textContent        )
-	localStorage.setItem('pitch_str_textContent'      , pitch_str.textContent       )
-	localStorage.setItem('max_threads_int_textContent', max_threads_int.textContent )
-	localStorage.setItem('mergefiles_str_textContent' , mergefiles_str.textContent  )
 	localStorage.setItem('statArea_style_display'     , statArea.style.display      )
 	localStorage.setItem('dopSettings_textContent'    , dopSettings.textContent     )
 	localStorage.setItem('cbLexxRegister_checked'     , cbLexxRegister.checked      )
@@ -654,6 +653,8 @@ function save_settings() {
 }
 
 function load_settings() {
+	const delay = localStorage.getItem('restart_delay_value')
+	if (delay !== null) restart_delay.value = delay
 	console.log(localStorage.getItem('cbLexxRegister_checked'     ))
 	if (localStorage.getItem('pointsSelect_value'         )) { pointsSelect.value          = localStorage.getItem('pointsSelect_value'         ) }
 	if (localStorage.getItem('pointsType_innerHTML'       )) { pointsType.innerHTML        = localStorage.getItem('pointsType_innerHTML'       ) }
@@ -662,13 +663,14 @@ function load_settings() {
 	if (localStorage.getItem('pitch_value'                )) { pitch.value                 = localStorage.getItem('pitch_value'                ) }
 	if (localStorage.getItem('max_threads_value'          )) { max_threads.value           = localStorage.getItem('max_threads_value'          ) }
 	if (localStorage.getItem('mergefiles_value'           )) { mergefiles.value            = localStorage.getItem('mergefiles_value'           ) }
-	if (localStorage.getItem('rate_str_textContent'       )) { rate_str.textContent        = localStorage.getItem('rate_str_textContent'       ) }
-	if (localStorage.getItem('pitch_str_textContent'      )) { pitch_str.textContent       = localStorage.getItem('pitch_str_textContent'      ) }
-	if (localStorage.getItem('max_threads_int_textContent')) { max_threads_int.textContent = localStorage.getItem('max_threads_int_textContent') }
-	if (localStorage.getItem('mergefiles_str_textContent' )) { mergefiles_str.textContent  = localStorage.getItem('mergefiles_str_textContent' ) }
 	if (localStorage.getItem('statArea_style_display'     )) { statArea.style.display      = localStorage.getItem('statArea_style_display'     ) === 'none' ? 'none' : 'flex' }
 	if (localStorage.getItem('dopSettings_textContent'    )) { dopSettings.textContent     = localStorage.getItem('dopSettings_textContent'    ) }
 	if (localStorage.getItem('cbLexxRegister_checked'     )) { cbLexxRegister.checked      = localStorage.getItem('cbLexxRegister_checked'     ) === 'true' }
 	if (localStorage.getItem('cbLexxUse_checked'          )) { cbLexxUse.checked           = localStorage.getItem('cbLexxUse_checked'          ) === 'true' }
-	threads_info = { count: parseInt(max_threads.value), stat: stat_str }
+	threads_info = { saved: 0, stat: stat_str }
+	update_rate_str()
+	update_pitch_str()
+	update_max_threads_int()
+	update_mergefiles_str()
+	update_restart_delay_str()
 }

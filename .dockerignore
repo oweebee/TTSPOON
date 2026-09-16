@@ -1,0 +1,7 @@
+.git
+**/CONTEXT.md
+**/Suivi_IA_logs.md
+**/AGENTS.md
+.env
+.env.*
+tests

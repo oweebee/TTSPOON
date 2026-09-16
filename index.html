@@ -412,6 +412,11 @@
       <label for="mergefiles">Fusionner les MP3 par<output style="float: right;" id="mergefiles-str">10 fichiers</output></label>
       <input type="range" min=1 max=100 value=10 step=1 class="mergefiles" id="mergefiles">
     </div>
+    <div id="div-restartdelay" class="slidecontainer">
+      <br>
+      <label for="restartdelay">Relancer après une inactivité de <output style="float: right;" id="restartdelay-str">10000 s</output></label>
+      <input type="range" step="1" class="restartdelay" id="restartdelay">
+    </div>
 	<label id="dop-settings-label">﹀</label>
 	<br>
 	<button class="save" id="savebutton">Enregistrer en MP3</button>
@@ -426,7 +431,7 @@
   </section>
   <script src="./assets/env-config.js?v=1"></script>
   <script src="./assets/auth.js?v=1"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="./assets/jszip.min.js"></script>
   <script src="./assets/texts_converter.js?v=1"></script>
   <script src="./assets/processing_file.js?v=1"></script>
   <script src="./assets/socket_edge_tts.js?v=1"></script>
