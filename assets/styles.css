@@ -142,7 +142,8 @@ input {
 }
 
 myspace {
-	display: block;
+	display: flex;
+	gap: 8px;
 	width: 100%;
 }
 
@@ -161,6 +162,7 @@ button {
 rowspace {
     display: flex;
     justify-content: space-between;
+    gap: 8px;
 	width: 100%;
     min-width: 20rem;
 }
@@ -233,14 +235,11 @@ rowspace {
 }
 
 #file-button-lex {
-	width: 48%;
-	display: inline-block;
+	flex: 1;
 }
 
 #file-button {
-	width: 48%;
-	float: right;
-	display: inline-block;
+	flex: 1;
 }
 
 #text-area {
