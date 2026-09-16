@@ -142,8 +142,9 @@ input {
 }
 
 myspace {
-	display: flex;
-	gap: 8px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 4px 8px;
 	width: 100%;
 }
 
