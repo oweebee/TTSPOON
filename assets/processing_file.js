@@ -86,15 +86,7 @@ class ProcessingFile {
 			  fix_text = fix_text.replace(/\./g, '\r\n\r\n\r\n\r\n')
 		  } else {
 			  var new_point = pointsSelect.value[pointsSelect.value.length - 1]
-			  if (pointsType.innerHTML === "V1") {
-				  fix_text = fix_text.replace(/\./g, new_point)
-			  } else if (pointsType.innerHTML === "V2") {
-				  fix_text = fix_text.replace(new RegExp('\\.[ \\t]{1,}\\n', 'g'), '.\n')
-				  fix_text = fix_text.replace(new RegExp('\\.(?![\\r\\n])', 'g'), new_point)
-			  } else if (pointsType.innerHTML === "V3") {
-				  fix_text = fix_text.replace(new RegExp('\\.[ \\t]{1,}\\n', 'g'), '.\n')
-				  fix_text = fix_text.replace(new RegExp('\\.[ \\t]', 'g'), new_point + ' ')
-			  }
+			  fix_text = fix_text.replace(/\./g, new_point)
 		  }
 	  }
 

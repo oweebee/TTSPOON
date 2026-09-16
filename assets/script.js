@@ -13,7 +13,6 @@ const voice = document.querySelector('.voices')
 const saveButton = document.querySelector('.save')
 const settingsButton = document.querySelector('.settingsbutton')
 const pointsSelect = document.querySelector('.pointsselect')
-const pointsType = document.querySelector('.pointstype')
 const textArea = document.getElementById('text-area')
 const statArea = document.getElementById('stat-area')
 const stat_info = document.querySelector('#stat-info')
@@ -627,20 +626,11 @@ const start = () => {
 }
 
 
-function points_mod() {
-	if (pointsType.innerHTML === "V1") {
-		pointsType.innerHTML = "V2";
-	} else if (pointsType.innerHTML === "V2") {
-		pointsType.innerHTML = "V3";
-	} else if (pointsType.innerHTML === "V3") {
-		pointsType.innerHTML = "V1";
-	}
 }
 
 function save_settings() {
 	localStorage.setItem('restart_delay_value', restart_delay.value)
 	localStorage.setItem('pointsSelect_value'         , pointsSelect.value          )
-	localStorage.setItem('pointsType_innerHTML'       , pointsType.innerHTML        )
 	localStorage.setItem('voice_value'                , voice.value                 )
 	localStorage.setItem('rate_value'                 , rate.value                  )
 	localStorage.setItem('pitch_value'                , pitch.value                 )
@@ -657,7 +647,6 @@ function load_settings() {
 	if (delay !== null) restart_delay.value = delay
 	console.log(localStorage.getItem('cbLexxRegister_checked'     ))
 	if (localStorage.getItem('pointsSelect_value'         )) { pointsSelect.value          = localStorage.getItem('pointsSelect_value'         ) }
-	if (localStorage.getItem('pointsType_innerHTML'       )) { pointsType.innerHTML        = localStorage.getItem('pointsType_innerHTML'       ) }
 	if (localStorage.getItem('voice_value'                )) { voice.value                 = localStorage.getItem('voice_value'                ) }
 	if (localStorage.getItem('rate_value'                 )) { rate.value                  = localStorage.getItem('rate_value'                 ) }
 	if (localStorage.getItem('pitch_value'                )) { pitch.value                 = localStorage.getItem('pitch_value'                ) }
