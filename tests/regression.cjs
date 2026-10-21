@@ -23,9 +23,10 @@ test('assemblage audio conserve les octets et ignore les trames sans audio',asyn
  assert.deepEqual([...s.my_uint8Array],[0,255,1,2,3]);
  assert.equal(saved,1); assert.equal(s.audios.length,0);
 });
-test('SHA-256 reste exact sur appels répétés',()=>{
- const s=socketContext();
- for(const value of ['abc','1234567890','abc']) assert.equal(s.sha256(value),createHash('sha256').update(value).digest('hex'));
+test('jeton GEC v2 identique à edge-tts 7.3.1 (drm.py)',()=>{
+ const s=socketContext();const ref={1700000000:'2CD23A2CA0B2595A-F3C846C370E05F9CC83ACC5F995C5F5D87A4D0F14CE8936A0F902E64099E38A2',1761000000:'9875C7D8BB340E51-4AC084DC23E2DEA93DF952AE15BE8A23A325A2F010C0C277FBC15644D5A006C9',1792590000.5:'4AA44A8935302555-1EE4960DF6FB6EFEA32A8747FC8DEDC196B41265564DF4CEB4218433B494DABF',1800000123:'99E54519B490BE5C-E162DB0977FBDCB9B86DD8148BF1BCDC3C0303176CE39852A42B415935C20654'};
+ const now=Date.now;
+ try{for(const [t,v] of Object.entries(ref)){Date.now=()=>Number(t)*1000;assert.equal(s.generateSecMsGec(),v);assert.equal(s.generateSecMsGec(),v);}}finally{Date.now=now;}
 });
 function directoryContext(picker) {
  const source=fs.readFileSync('assets/script.js','utf8');
@@ -79,7 +80,7 @@ test('horloge serveur corrige le GEC sans modifier le token',async()=>{
  const r=runtime({fetch:async()=>({headers:{get:()=>date}})});
  await r.ctx.Socket.gec_sync_clock_skew();
  assert.ok(Math.abs(r.ctx.Socket.gec_clock_skew-(Date.parse(date)-Date.now())/1000)<1);
- const s=Object.create(r.ctx.Socket.prototype);const gec=s.generateSecMsGec();assert.match(gec,/^[A-F0-9]{64}$/);
+ const s=Object.create(r.ctx.Socket.prototype);const gec=s.generateSecMsGec();assert.match(gec,/^[A-F0-9]{16}-[A-F0-9]{64}$/);
 });
 test('limite des flux modifiable, sans doublons de lancement',()=>{
  const r=runtime();const launched=[];
@@ -111,7 +112,7 @@ test('cycle WebSocket complet compte une seule partie et garde les octets pour f
  r.ctx.updateStatusBox=()=>{};
  const s=new r.ctx.Socket(0,'livre','0001','fr-FR, DeniseNeural','+0Hz','+0%','+0%','Bonjour',null,info,true);
  sockets[0].handlers.open();assert.equal(sockets[0].sent.length,2);
- assert.match(sockets[0].url,/Sec-MS-GEC-Version=1-151\.0\.4129\.59/);
+ assert.match(sockets[0].url,/Sec-MS-GEC-Version=2-143\.0\.3650\.75/);
  await sockets[0].handlers.message({data:new Blob(['Path:audio\r\n',new Uint8Array([1,2,3])])});
  await sockets[0].handlers.message({data:'Path:turn.end'});
  await sockets[0].handlers.message({data:'Path:turn.end'});

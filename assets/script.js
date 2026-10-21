@@ -21,7 +21,6 @@ const fileInputLex = document.getElementById('file-input-lex')
 const fileInput = document.getElementById('file-input')
 const fileButtonLex = document.getElementById('file-button-lex')
 const fileButton = document.getElementById('file-button')
-const dopSettings = document.getElementById('dop-settings-label')
 const cbLexxRegister = document.getElementById('lexx_register')
 const cbLexxUse = document.getElementById('lexx_use')
 const textTools = document.getElementById('text-tools')
@@ -123,7 +122,6 @@ document.addEventListener('click', (e) => {
 });
 
 saveButton.addEventListener('click', e => start())
-dopSettings.addEventListener('click', e => change_dopSettings())
 cleanPartsBtn.addEventListener('click', e => clean_parts())
 cleanLinebreaksBtn.addEventListener('click', e => clean_linebreaks())
 newlineAfterPunctBtn.addEventListener('click', e => newline_after_punct())
@@ -132,7 +130,7 @@ marginIndentedCapitalBtn.addEventListener('click', e => margin_indented_capital(
 replaceWordBtn.addEventListener('click', e => replace_word())
 
 //save_alloneButton.addEventListener('click', e => start_allone())
-settingsButton.addEventListener('click', e => lite_mod())
+settingsButton.addEventListener('click', e => { lite_mod(); save_settings() })
 const update_rate_str = () => rate_str.textContent = rate.value >= 0 ? `+${rate.value}%` : `${rate.value}%`
 const update_pitch_str = () => pitch_str.textContent = pitch.value >= 0 ? `+${pitch.value}Hz` : `${pitch.value}Hz`
 const update_max_threads_int = () => max_threads_int.textContent = max_threads.value
@@ -159,11 +157,6 @@ window.addEventListener('beforeunload', function(event) { save_settings() });
 textArea.addEventListener('input', () => { book_loaded = false })
 
 
-stat_info.addEventListener('click', () => {
-	if (textArea.style.display == 'none') {
-		statArea.style.display = (statArea.style.display == 'none') ? 'flex' : 'none';
-	}
-});
 
 const FIRST_STRINGS_SIZE = 800
 const LAST_STRINGS_SIZE = 4200
@@ -184,9 +177,8 @@ const has_free_thread = () => num_book - threads_info.saved < parseInt(max_threa
 var save_path_handle
 
 document.addEventListener("DOMContentLoaded", function(event) {
-	lite_mod()
 	load_settings()
-	set_dopSettings()
+	lite_mod(localStorage.getItem('text_visible') !== 'false')
 	load_default_lexx()
 })
 
@@ -272,25 +264,6 @@ function margin_lowercase() {
 	}).join('\n')
 }
 
-function change_dopSettings() {
-	if (dopSettings.textContent == "︿") {
-		dopSettings.textContent = "﹀"
-	} else {
-		dopSettings.textContent = "︿"
-	}
-	set_dopSettings()
-}
-
-function set_dopSettings() {
-	const display_dop = (textArea.style.display == 'block' || dopSettings.textContent == "︿") ? 'block' : 'none';
-	document.querySelector('#div-pitch').style.display = display_dop
-	document.querySelector('#div-threads').style.display = display_dop
-	document.querySelector('#div-mergefiles').style.display = display_dop
-	document.querySelector('#div-restartdelay').style.display = display_dop
-	document.querySelector('#div-lexx_register').style.display = display_dop
-	document.querySelector('#div-lexx_use').style.display = display_dop
-}
-
 fileInputLex.addEventListener('change', (event) => {
 	lexx = []
 	const file = event.target.files[0]
@@ -302,9 +275,9 @@ fileInputLex.addEventListener('change', (event) => {
 			lexx = reader.result.split("\n")
 		}
 		reader.readAsText(file)
-		fileButtonLex.textContent = "Chargé"
+		fileButtonLex.textContent = "Dictionnaire importé"
 	} else {
-		fileButtonLex.textContent = "Charger"
+		fileButtonLex.textContent = "Importer un .lexx"
 	}
 })
 
@@ -319,8 +292,8 @@ fileInput.addEventListener('change', (event) => {
 	}
 
 	if (event.target.files.length == 0) {
-		fileButton.textContent = "Ouvrir"
-		stat_info.textContent = ""//"Ouvert"
+		fileButton.textContent = "Ouvrir un livre"
+		stat_info.textContent = ""
 	}
 
 	for (let file of event.target.files) {
@@ -328,7 +301,7 @@ fileInput.addEventListener('change', (event) => {
 		stat_str.textContent = "0 / 0"
 
 		if (file) {
-			fileButton.textContent = "Traitement..."
+			fileButton.textContent = "Lecture…"
 			const reader = new FileReader()
 			reader.onload = () => {
 				book_loaded = true
@@ -345,52 +318,38 @@ fileInput.addEventListener('change', (event) => {
 				} else if ( file_name_toLowerCase.endsWith('.zip') ) {
 					convertZipToTxt(file)
 				}
-				fileButton.textContent = "Ouvert(s)"
+				fileButton.textContent = event.target.files.length > 1 ? event.target.files.length + " livres ouverts" : "Livre ouvert"
 			}
 
 			reader.readAsText(file)
 		} else {
-			fileButton.textContent = "Ouvrir"
+			fileButton.textContent = "Ouvrir un livre"
 		}
 	}
 
 })
 
-function lite_mod() {
-	const display_str = (textArea.style.display == 'none') ? 'block' : 'none'
-	const display_stat = (textArea.style.display == 'none') ? 'flex' : 'none'
-	const display_dop = (textArea.style.display == 'none' || dopSettings.textContent == "︿") ? 'block' : 'none';
-	textArea.style.display = display_str;
-	statArea.style.display = display_stat;
-	textTools.style.display = (display_str == 'none') ? 'none' : 'flex';
-
-	document.querySelector('#div-pitch').style.display = display_dop
-	document.querySelector('#div-threads').style.display = display_dop
-	document.querySelector('#div-mergefiles').style.display = display_dop
-	document.querySelector('#div-restartdelay').style.display = display_dop
-	document.querySelector('#div-lexx_register').style.display = display_dop
-	document.querySelector('#div-lexx_use').style.display = display_dop
+// Affiche ou masque le texte (masquer accélère le chargement des gros livres).
+function lite_mod(show_text) {
+	if (show_text === undefined) show_text = textArea.style.display == 'none'
+	textArea.style.display = show_text ? 'block' : 'none'
+	textTools.style.display = show_text ? '' : 'none'
+	statArea.style.display = 'flex'
+	settingsButton.textContent = show_text ? 'Masquer le texte' : 'Afficher le texte'
+	settingsButton.setAttribute('aria-pressed', show_text ? 'false' : 'true')
+	document.body.classList.toggle('text-hidden', !show_text)
 
 	if (book && book.all_sentences.length > 0) {
 		textArea.value = ""
-	}
-
-	if (display_str == 'none') {
-		dopSettings.style.display = 'block'
-		document.querySelector("section").classList.replace("options", "optionslite")
-	} else {
-		dopSettings.style.display = 'none'
-		document.querySelector("section").classList.replace("optionslite", "options")
-
-		if (book && book.all_sentences.length > 0) {
+		if (show_text) {
 			let tmp_ind = 0
 			for (let part of book.all_sentences) {
 				tmp_ind += 1
 				textArea.value += "Partie " + tmp_ind + ":\n" + part + "\n\n"
 			}
 		}
-
 	}
+	textArea.dispatchEvent(new Event('tts-text-changed'))
 }
 
 function get_text(_filename, _text, is_file, _voice, _rate, _pitch) {
@@ -427,8 +386,9 @@ function get_text(_filename, _text, is_file, _voice, _rate, _pitch) {
 		}
 		addStatusBox(tmp_ind - 1, 'Ouverte')
 	}
-	stat_info.textContent = ""//"Ouvert"
+	stat_info.textContent = ""
 	stat_str.textContent = `0 / ${book.all_sentences.length}`
+	textArea.dispatchEvent(new Event('tts-text-changed'))
 
 	//Nettoyage du traitement précédent
 	clear_old_run()
@@ -475,7 +435,7 @@ function add_edge_tts() {
 function get_audio() {
 	clear_old_run()
 	run_work = true
-	stat_info.textContent = "Traité"
+	stat_info.textContent = "Génération en cours"
 	const stat_count = stat_str.textContent.split(' / ');
 	stat_str.textContent = "0 / " + stat_count[1]
 	run_merge = mergefiles.value != 1;
@@ -633,8 +593,7 @@ function save_settings() {
 	localStorage.setItem('pitch_value'                , pitch.value                 )
 	localStorage.setItem('max_threads_value'          , max_threads.value           )
 	localStorage.setItem('mergefiles_value'           , mergefiles.value            )
-	localStorage.setItem('statArea_style_display'     , statArea.style.display      )
-	localStorage.setItem('dopSettings_textContent'    , dopSettings.textContent     )
+	localStorage.setItem('text_visible'               , textArea.style.display != 'none')
 	localStorage.setItem('cbLexxRegister_checked'     , cbLexxRegister.checked      )
 	localStorage.setItem('cbLexxUse_checked'          , cbLexxUse.checked           )
 }
@@ -642,15 +601,12 @@ function save_settings() {
 function load_settings() {
 	const delay = localStorage.getItem('restart_delay_value')
 	if (delay !== null) restart_delay.value = delay
-	console.log(localStorage.getItem('cbLexxRegister_checked'     ))
 	if (localStorage.getItem('pointsSelect_value'         )) { pointsSelect.value          = localStorage.getItem('pointsSelect_value'         ) }
 	if (localStorage.getItem('voice_value'                )) { voice.value                 = localStorage.getItem('voice_value'                ) }
 	if (localStorage.getItem('rate_value'                 )) { rate.value                  = localStorage.getItem('rate_value'                 ) }
 	if (localStorage.getItem('pitch_value'                )) { pitch.value                 = localStorage.getItem('pitch_value'                ) }
 	if (localStorage.getItem('max_threads_value'          )) { max_threads.value           = localStorage.getItem('max_threads_value'          ) }
 	if (localStorage.getItem('mergefiles_value'           )) { mergefiles.value            = localStorage.getItem('mergefiles_value'           ) }
-	if (localStorage.getItem('statArea_style_display'     )) { statArea.style.display      = localStorage.getItem('statArea_style_display'     ) === 'none' ? 'none' : 'flex' }
-	if (localStorage.getItem('dopSettings_textContent'    )) { dopSettings.textContent     = localStorage.getItem('dopSettings_textContent'    ) }
 	if (localStorage.getItem('cbLexxRegister_checked'     )) { cbLexxRegister.checked      = localStorage.getItem('cbLexxRegister_checked'     ) === 'true' }
 	if (localStorage.getItem('cbLexxUse_checked'          )) { cbLexxUse.checked           = localStorage.getItem('cbLexxUse_checked'          ) === 'true' }
 	threads_info = { saved: 0, stat: stat_str }
