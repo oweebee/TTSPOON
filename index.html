@@ -415,6 +415,12 @@
         <div class="voice-meta" id="voice-meta"></div>
       </div>
 
+      <div class="field">
+        <label for="text-lang">Langue du texte</label>
+        <select id="text-lang"></select>
+        <small>Évite qu'une voix multilingue bascule sur une autre langue.</small>
+      </div>
+
       <div class="field slider">
         <label for="rate">Vitesse <output id="rate-str">+100%</output></label>
         <input type="range" min="-50" max="100" value="100" step="5" class="rate" id="rate">
@@ -501,9 +507,9 @@
   <script src="./assets/jszip.min.js"></script>
   <script src="./assets/texts_converter.js?v=1"></script>
   <script src="./assets/processing_file.js?v=1"></script>
-  <script src="./assets/socket_edge_tts.js?v=2"></script>
+  <script src="./assets/socket_edge_tts.js?v=3"></script>
   <script src="./assets/script.js?v=2"></script>
-  <script src="./assets/ui.js?v=1"></script>
+  <script src="./assets/ui.js?v=2"></script>
 </body>
 
 </html>

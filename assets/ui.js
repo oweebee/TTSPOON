@@ -102,6 +102,23 @@
 	voiceSearch.addEventListener('input', () => applyFilter(false))
 	voices.addEventListener('change', updateVoiceMeta)
 
+	// ---------- Langue du texte (xml:lang envoyé au service) ----------
+	const textLang = $('text-lang')
+	const addLang = (value, text) => { const o = document.createElement('option'); o.value = value; o.textContent = text; textLang.appendChild(o) }
+	addLang('auto', 'Automatique (langue de la voix)')
+	const locs = [...new Set([...meta.values()].map(v => v.loc).filter(l => /^[a-z]{2,3}-[A-Z]{2}$/.test(l)))]
+	const locLabel = l => { const v = [...meta.values()].find(x => x.loc === l); return v.langLabel + ' (' + v.regionLabel + ') — ' + l }
+	locs.sort((a, b) => (b.startsWith('fr-') - a.startsWith('fr-')) || locLabel(a).localeCompare(locLabel(b), 'fr'))
+	locs.forEach(l => addLang(l, locLabel(l)))
+	const savedLang = store.get('text_lang')
+	textLang.value = (savedLang && [...textLang.options].some(o => o.value === savedLang)) ? savedLang : 'auto'
+	textLang.addEventListener('change', () => store.set('text_lang', textLang.value))
+	window.tts_text_lang = voiceFull => {
+		if (textLang.value !== 'auto') return textLang.value
+		const m = /\(([^,]+),/.exec(voiceFull || '')
+		return m ? m[1] : ''
+	}
+
 	// ---------- Curseurs : remplissage ----------
 	function paintRange(r) {
 		const min = +r.min || 0, max = +r.max || 100

@@ -120,3 +120,10 @@ test('cycle WebSocket complet compte une seule partie et garde les octets pour f
  assert.deepEqual([...s.my_uint8Array],[1,2,3]);
  s.cancel();assert.equal(r.timers.size,0);
 });
+test('xml:lang suit la voix, sinon en-US',()=>{
+ const s=socketContext();
+ s.my_voice='Microsoft Server Speech Text to Speech Voice (fr-FR, RemyMultilingualNeural)';
+ assert.match(s.mkssml(),/xml:lang='fr-FR'/);
+ s.my_voice='Microsoft Server Speech Text to Speech Voice (zh-CN-liaoning, XiaobeiNeural)';
+ assert.match(s.mkssml(),/xml:lang='en-US'/);
+});

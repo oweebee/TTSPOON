@@ -194,9 +194,20 @@ class SocketEdgeTTS {
 		add_edge_tts()
 	}
 
+	// Langue annoncée au service (xml:lang) : réglage « Langue du texte » de l'interface,
+	// sinon langue de la voix, sinon en-US (comportement d'origine).
+	text_lang() {
+		if (typeof tts_text_lang === 'function') {
+			const lang = tts_text_lang(this.my_voice)
+			if (/^[a-z]{2,3}-[A-Z]{2}$/.test(lang)) return lang
+		}
+		const m = /\(([a-z]{2,3}-[A-Z]{2}),/.exec(this.my_voice || '')
+		return m ? m[1] : 'en-US'
+	}
+
 	mkssml() {
 		return (
-			"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'>\n" +
+			"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='" + this.text_lang() + "'>\n" +
 			"<voice name='" + this.my_voice + "'><prosody pitch='" + this.my_pitch + "' rate='" + this.my_rate + "' volume='" + this.my_volume + "'>\n" +
 			this.my_text + "</prosody></voice></speak>"
 		)
